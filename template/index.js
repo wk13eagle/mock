@@ -86,56 +86,62 @@ function server(path, mock) { // 创建服务
       _params = req.query;
     }
 
-    const _verify = mock.verifyParams;
+    if (Config.verify) { // 如果开启校验
 
-    let _err = [];
+      const _verify = mock.verifyParams;
 
-    for (let val in _verify) { // 遍历校验参数
+      let _err = [];
 
-      let _val = _verify[val],
+      for (let val in _verify) { // 遍历校验参数
+
+        let _val = _verify[val],
           _addErr = false;
 
-      if (_val instanceof RegExp) { // 如果是正则
-        if (!_val.test(_params[val])) {
-          _addErr = true;
+        if (_val instanceof RegExp) { // 如果是正则
+          if (!_val.test(_params[val])) {
+            _addErr = true;
+          }
+        } else if (/^@/.test(_val)) { // 如果是类型
+
+          let _in;
+
+          switch (_val.substring(1)) {
+            case 'string':
+            case 'number':
+            case 'boolean':
+              _in = typeof _params[val] === _val.substring(1);
+              break;
+            case 'array':
+              _in = _params[val] instanceof Array;
+              break;
+            case 'object':
+              _in = (typeof _params[val]) === _val.substring(1) && !(_params[val] instanceof Array);;
+              break;
+          }
+
+          if (!_in) {
+            _addErr = true;
+          }
+
+        } else { // 其他
+
+          if (_params[val] !== _val) {
+            _addErr = true;
+          }
+
         }
-      } else if (/^@/.test(_val)) { // 如果是类型
 
-        let _in;
-
-        switch (_val.substring(1)) {
-          case 'string':
-          case 'number':
-          case 'boolean':
-            _in = typeof _params[val] === _val.substring(1);
-            break;
-          case 'array':
-            _in = _params[val] instanceof Array;
-            break;
-          case 'object':
-            _in = (typeof _params[val]) === _val.substring(1) && !(_params[val] instanceof Array);;
-            break;
-        }
-
-        if (!_in) {
-          _addErr = true;
-        }
-
-      } else { // 其他
-
-        if (_params[val] !== _val) {
-          _addErr = true;
-        }
+        _addErr && _err.push(val + '参数错误');
 
       }
 
-      _addErr && _err.push(val + '参数错误');
+      if (_err.length > 0) {
+        res.json({ error: _err });
+      } else {
+        res.json(Mock.mock(mock.returnData).data);
+      }
 
-    }
-
-    if (_err.length > 0) {
-      res.json({error: _err});
-    } else {
+    } else { // 如果关闭校验
       res.json(Mock.mock(mock.returnData).data);
     }
 
