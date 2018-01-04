@@ -1,0 +1,17 @@
+{
+  "name": "mock",
+  "version": "0.0.1",
+  "description": "基于MockJS的假数据工具。",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "author": "K13",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "connect-multiparty": "^2.1.0",
+    "express": "^4.16.2",
+    "mockjs": "^1.0.1-beta3"
+  }
+}

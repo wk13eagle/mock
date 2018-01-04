@@ -1,0 +1,19 @@
+{
+  "name": "mock",
+  "version": "0.0.1",
+  "description": "基于MockJS的假数据工具。",
+  "main": "meta.js",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/wk13eagle/mock.git"
+  },
+  "keywords": [
+    "h5"
+  ],
+  "author": "K13",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wk13eagle/mock/issues"
+  },
+  "homepage": "https://github.com/wk13eagle/mock#readme"
+}
