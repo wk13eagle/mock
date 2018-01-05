@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "node index.js",
-    "watch-dev": "supervisor -w api index.js"
+    "watch-dev": "supervisor --watch ./api index.js"
   },
   "author": "K13",
   "license": "MIT",
