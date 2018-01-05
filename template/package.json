@@ -4,7 +4,8 @@
   "description": "基于MockJS的假数据工具。",
   "main": "index.js",
   "scripts": {
-    "dev": "node index.js"
+    "dev": "node index.js",
+    "watch-dev": "nodemon index.js"
   },
   "author": "K13",
   "license": "MIT",
