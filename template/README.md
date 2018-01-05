@@ -55,9 +55,9 @@ module.exports = {
 **PS :**
 
 修改或添加删除接口文件后, 需重启服务。
-如果需要自动重启, 需全局安装 `nodemon`
+如果需要自动重启, 需全局安装 `supervisor`
 ``` bash
-npm install -g nodemon
+npm install -g supervisor
 ```
 启动命令使用
 ``` bash
