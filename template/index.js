@@ -63,7 +63,7 @@ function fileDisplay(filePath) { // 遍历文件夹
 }
 
 function server(path, mock) { // 创建服务
-
+  path = path.replace(/\\/g, '/'); // 替换win下路径的'\'
   const multipartMiddleware = Multipart(); // 实例化connect-multiparty
 
   if (Config.postKind === 'application/json') {
@@ -80,69 +80,75 @@ function server(path, mock) { // 创建服务
 
     let _params;
 
-    if (req.method === 'POST') { // POST请求
-      _params = req.body;
-    } else { // GET或其他
-      _params = req.query;
-    }
+    setTimeout(ret, 500);
 
-    if (Config.verify) { // 如果开启校验
+    function ret() {
 
-      const _verify = mock.verifyParams;
+      if (req.method === 'POST') { // POST请求
+        _params = req.body;
+      } else { // GET或其他
+        _params = req.query;
+      }
 
-      let _err = [];
+      if (Config.verify) { // 如果开启校验
 
-      for (let val in _verify) { // 遍历校验参数
+        const _verify = mock.verifyParams;
 
-        let _val = _verify[val],
-          _addErr = false;
+        let _err = [];
 
-        if (_val instanceof RegExp) { // 如果是正则
-          if (!_val.test(_params[val])) {
-            _addErr = true;
+        for (let val in _verify) { // 遍历校验参数
+
+          let _val = _verify[val],
+            _addErr = false;
+
+          if (_val instanceof RegExp) { // 如果是正则
+            if (!_val.test(_params[val])) {
+              _addErr = true;
+            }
+          } else if (/^@/.test(_val)) { // 如果是类型
+
+            let _in;
+
+            switch (_val.substring(1)) {
+              case 'string':
+              case 'number':
+              case 'boolean':
+                _in = typeof _params[val] === _val.substring(1);
+                break;
+              case 'array':
+                _in = _params[val] instanceof Array;
+                break;
+              case 'object':
+                _in = (typeof _params[val]) === _val.substring(1) && !(_params[val] instanceof Array);;
+                break;
+            }
+
+            if (!_in) {
+              _addErr = true;
+            }
+
+          } else { // 其他
+
+            if (_params[val] !== _val) {
+              _addErr = true;
+            }
+
           }
-        } else if (/^@/.test(_val)) { // 如果是类型
 
-          let _in;
-
-          switch (_val.substring(1)) {
-            case 'string':
-            case 'number':
-            case 'boolean':
-              _in = typeof _params[val] === _val.substring(1);
-              break;
-            case 'array':
-              _in = _params[val] instanceof Array;
-              break;
-            case 'object':
-              _in = (typeof _params[val]) === _val.substring(1) && !(_params[val] instanceof Array);;
-              break;
-          }
-
-          if (!_in) {
-            _addErr = true;
-          }
-
-        } else { // 其他
-
-          if (_params[val] !== _val) {
-            _addErr = true;
-          }
+          _addErr && _err.push(val + '参数错误');
 
         }
 
-        _addErr && _err.push(val + '参数错误');
+        if (_err.length > 0) {
+          res.json({ error: _err });
+        } else {
+          res.json(Mock.mock(mock.returnData).data);
+        }
 
-      }
-
-      if (_err.length > 0) {
-        res.json({ error: _err });
-      } else {
+      } else { // 如果关闭校验
         res.json(Mock.mock(mock.returnData).data);
       }
 
-    } else { // 如果关闭校验
-      res.json(Mock.mock(mock.returnData).data);
     }
 
   });
