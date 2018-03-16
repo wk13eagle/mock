@@ -9,10 +9,16 @@ const Express = require('express'), // 引入Express
       apiPath = Path.join(__dirname, 'api'); // api路径
 
 app.use(function (req, res, next) { // 跨域支持
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+  res.header('Access-Control-Allow-Headers', '*'); // 允许热河头, 包括自定义
+  // 也可以这样写
+  // res.header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, 自定义头');
+  // 这样写最后只有最后一个起效, 其他会被覆盖
+  // res.header('Access-Control-Allow-Headers', 'X-Requested-With');
+  // res.header('Access-Control-Allow-Headers', 'Content-Type');
+
   next();
 });
 
